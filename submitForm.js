@@ -3,6 +3,7 @@ console.log(submit)
 const formName = 'IISSTreatmentPlan'
 console.log('form: ' + formName)
 let newForm = {}
+newForm.goals = []
 let submitted = 0
 let additional = 0
 
@@ -11,6 +12,8 @@ clientName.addEventListener('change', (e) => {
 	console.log('changed')
 	newForm.clientName = e.target.value;
   console.log(newForm.clientName);
+  document.getElementById('showClientName').innerHTML = newForm.clientName;
+  document.getElementById('showClientName1').innerHTML = newForm.clientName
   })
   
 let address = document.querySelector('input#address')
@@ -71,6 +74,8 @@ let dob = document.querySelector('input#dob')
 dob.addEventListener('change', (e) => {
 	newForm.dob = e.target.value;
   console.log(newForm.dob);
+  document.getElementById('showClientDOB').innerHTML = newForm.dob;
+  document.getElementById('showClientDOB1').innerHTML = newForm.dob;
 })
 
 let familyTrainerName = document.querySelector('input#familyTrainerName')
@@ -79,26 +84,37 @@ familyTrainerName.addEventListener('change', (e) => {
   console.log(newForm.familyTrainerName);
 })
 
-let annual = document.querySelector('annual')
-annual.addEventListener('change', (e) => {
-    newForm.treatmentPlanDuration = e.target.value;
+let annual = document.querySelector('input#annual')
+annual.addEventListener('change', (e) => { 
+    if (newForm.annual) {
+        newForm.annual = ''
+        document.getElementById('annual').checked = false
+    } else {
+        newForm.annual = 'annual'
+        newForm.threeMonths = ''
+        document.getElementById('threeMonth').checked = false
+    }
     console.log(newForm.annual)
     })
 
-let threeMonth = document.querySelector('threeMonth')
+let threeMonth = document.querySelector('input#threeMonth')
 threeMonth.addEventListener('change', (e) => {
-    newForm.treatmentPlanDuration = e.target.value;
+    if (newForm.threeMonth) {
+        newForm.threeMonth = ''
+        document.getElementById('threeMonth').checked = false
+    } else {
+        newForm.threeMonth = 'threeMonth'
+        newForm.annual = ''
+        document.getElementById('annual').checked = false
+    }
     console.log(newForm.threeMonth)
 })
     
-let background = document.querySelector('background')
+let background = document.querySelector('input#background')
 background.addEventListener('change', (e) => {
     newForm.background = e.target.value;
     console.log(newForm.background)
     })
-
-document.getElementById('showClientName').innerHTML = newForm.clientName;
-document.getElementById('showClientDOB').innerHTML = newForm.dob;
 
 class Goal {
     constructor(goalName, strengths, needs, objectives, interventions, responsiblePersonTimeline, progress, notes) {
@@ -116,15 +132,16 @@ class Goal {
 async function getCurrentGoal(goal) {
     goal.goalName = document.getElementById('mainGoal').value
     goal.strengths = document.getElementById('strengths').value;
-    goal.needs = document.getElementById('needs'), value;
-    goal.objectives = await getObjectives()
+    goal.needs = document.getElementById('needs').value;
+    goal.objectives = await getObjectives
     goal.interventions = document.getElementById('interventions').value;
-    goal.responsiblePersonTimeline = await getResponsiblePersonTimeline();
-    goal.progress = await getProgress()
+    goal.responsiblePersonTimeline = await getResponsiblePersonTimeline;
+    goal.progress = await getProgress
     goal.notes = document.getElementById('notes').value;
+    return goal
 }
 
-async function getObjectives() {
+getObjectives = new Promise ((resolve) => {
     let objectives = []
     for (let i = 1; i < 4; i++) {
         if (document.getElementById(`goal${i}`) == '') {
@@ -132,10 +149,10 @@ async function getObjectives() {
             return objectives
         } else {objectives.push(document.getElementById(`goal${i}`).value)}
     }
-    return objectives
-}
+    resolve(objectives)
+})
 
-async function getResponsiblePersonTimeline() {
+getResponsiblePersonTimeline = new Promise ((resolve) => {
     let responsiblePersonTimeline = []
     for (let i = 1; i < 4; i++) {
         if (document.getElementById(`responsiblePersonTimelineItem${i}`) == '') {
@@ -143,29 +160,32 @@ async function getResponsiblePersonTimeline() {
             return responsiblePersonTimeline
         } else {responsiblePersonTimeline.push(document.getElementById(`responsiblePersonTimelineItem${i}`).value)}
     }
-    return responsiblePersonTimeline
-}
+    resolve(responsiblePersonTimeline)
+})
 
-async function getProgress() {
+getProgress = new Promise ((resolve) => {
     let progress = ''
-    if (document.getElementById('achieved').isChecked) { progress = 'achieved' }
-    if (document.getElementById('discontinued'), isChecked) { progress = 'discontinued' } else { progress = 'on-going' }
-    return progress
-}
+    if (document.getElementById('achieved').checked) { progress = 'achieved' }
+    if (document.getElementById('discontinued').checked) { progress = 'discontinued' } else { progress = 'on-going' }
+    resolve(progress)
+})
 
 document.getElementById('submitCurrentGoal').addEventListener("click", async (event) => {
     goal = new Goal;
+    console.log(goal)
     goal = await getCurrentGoal(goal)
+    console.log(`I am the the completed goal: ${goal}`)
     newForm.goals.push(goal)
     submitted++
-    document.getElementById('submitError').style.display='none'
+    document.getElementById('submissionResponse').innerHTML = "Successfully Submitted"
 })
 
 document.getElementById('createNewGoal').addEventListener("click", async (event) => {
     if (submitted <= additional) {
-        showError()
+        document.getElementById('submissionResponse').innerHTML = "You need to submit a goal before continuing"
         return
     }
+    document.getElementById('submissionResponse').innerHTML = " "
     additional++
     clearGoals()
     return
@@ -181,45 +201,35 @@ function clearGoals() {
     document.getElementById('needs').value = '';
     for (let i = 1; i < 4; i++) {
         document.getElementById(`goal${i}`).value = ''
-        document.getElementById(`responsiblePersonTimeline${i}`).value = ''
+        document.getElementById(`responsiblePersonTimelineItem${i}`).value = ''
     }
     document.getElementById('interventions').value = ''
-    document.getElementById('achieved').isChecked = false;
-    document.getElementById('ongoing').isChecked = false;
-    document.getElementById('discontinued').isChecked = false;
+    document.getElementById('achieved').checked = false;
+    document.getElementById('ongoing').checked = false;
+    document.getElementById('discontinued').checked = false;
     document.getElementById('notes').value = ''
 }
 
-document.getElementById('showClientName').innerHTML = newForm.clientName
-document.getElementById('showClientDOB').innerHTML = newForm.dob;
-
-function getFamilyTreatmentPlan() {
-    if (document.getElementById('agreeFamilyTreatmentPlan').isChecked) { return 'agree' }
-    else {return 'disagree'}
-}
-
-function getAutismSupportTreatmentPlan() {
-    if (document.getElementById('agreeISST').isChecked) { return 'agree' }
-    else {return 'disagree'}    
-}
-
-function copyOfPlan() {
-    if (document.getElementById('acceptReceiveCopy').isChecked) { return 'accept' }
-    if (document.getElementById('hardCopyReceiveCopy').isChecked) { return 'hard copy' }
-    if (document.getElementById('electronicReceiveCopy').isChecked) { return 'electronic' }
-    else { return 'disagree' }
-}
-
 document.getElementById('submit').addEventListener("click", async (event) => {
-    familyTreatmentPlan = await getFamilyTreatmentPlan();
-    autismSupportTreatmentPlan = await getAutismSupportTreatmentPlan();
-    copyOfPlan = await getCopyOfPlan()
+    familyTreatmentPlan = document.getElementById('agreeFamilyTreatmentPlan').checked ? "agree" : "disagree"
+    autismSupportTreatmentPlan = document.getElementById('agreeISST').checked ? "agree" : "disagree";
     newForm.caregiverName = document.getElementById('caregiverName').value;
     newForm.staffMemberName = document.getElementById('staffName').value;
     newForm.familyTreatmentPlan = familyTreatmentPlan;
     newForm.autismSupportTreatmentPlan = autismSupportTreatmentPlan;
-    newForm.copyOfPlan = copyOfPlan;
-    submitForm(newForm, 'consultationFeeSummary')
+    if (document.getElementById('acceptReceiveCopy').checked) { newForm.copyOfPlan = 'accept' }
+    if (document.getElementById('hardCopyReceiveCopy').checked) { newForm.copyOfPlan = 'hard copy' }
+    if (document.getElementById('electronicReceiveCopy').checked) { newForm.copyOfPlan = 'electronic' }
+    if (document.getElementById('disagreeReceiveCopy').checked) { newForm.copyOfPlan = 'disagree' }
+    console.log(newForm)
+    submitForm(newForm, formName)
+})
+
+let printForm = document.getElementById('printToPDF')
+printForm.style.display = 'none'
+
+document.getElementById('submit').addEventListener("click", async (event) => {
+  submitForm(newForm, formName)
 })
 
 async function submitForm(data, form) {
@@ -236,22 +246,54 @@ async function submitForm(data, form) {
     },
     body: JSON.stringify(document)
   })
-    .then((response) => {
-      if (response.status == 200) {
-      showSuccess()
-      } else {
-        showError(response.body)
-      }
-    })
+    .then(response => response.json())
+    .then(data => respond(data)) 
     .catch((err) => showError(err))
 }
 
-
-function showSuccess() {
-    document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
+function respond(data) {
+  let formId = data.formId
+  if (formId) {
+    showSuccess(formId)
+    let name = newForm.clientId	  
+    sendNotification(formId, name)	  
+  } else {
+    showError(data.error)
+  }
 }
+
+function showSuccess(formId) {
+  document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
+  printForm.style.display = 'inline';
+  printForm.addEventListener('click', (e) => {
+  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/IISS-treatment-plan?formId=${formId}`
+  })
+}
+
 
 function showError(err) {
     console.error
     document.getElementById('returnMessage').innerHTML = `An error occurred when submitting this form, which was ${err}. Please contact the administrator for help.`
+}
+
+async function sendNotification(id, client) {
+  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/IISS-treatment-plan?formId=${id}>Educational Consultation Summary</a>`
+  console.log(message)
+  const url = 'https://pffm.azurewebsites.net/notices'
+  let notification = {
+    'name': client,
+    'notice' : message 
+  }
+  const header = {
+      'Content-Type': 'application/json',
+      "Access-Control-Allow-Origin" : "*"
+  }
+  
+  fetch(url, {
+    method: "POST",
+    headers: header,
+    body: JSON.stringify(notification)
+  })
+    .then(() => console.log('notice sent'))
+    .catch(console.error)
 }
