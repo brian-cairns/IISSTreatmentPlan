@@ -252,11 +252,11 @@ async function submitForm(data, form) {
 }
 
 function respond(data) {
-  let formId = data.formId
-  if (formId) {
-    showSuccess(formId)
-    let name = newForm.clientId	  
-    sendNotification(formId, name)	  
+  let id = data.id
+  if (id) {
+    showSuccess(id)
+    let name = newForm.clientName	  
+    sendNotification(id, name)	  
   } else {
     showError(data.error)
   }
@@ -266,7 +266,7 @@ function showSuccess(formId) {
   document.getElementById('returnMessage').innerHTML = 'Form has been successfully submitted'
   printForm.style.display = 'inline';
   printForm.addEventListener('click', (e) => {
-  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/IISS-treatment-plan?formId=${formId}`
+  location.href = `phoenix-freedom-foundation-backend.webflow.io/completed-forms/IISS-treatment-plan?id=${id}`
   })
 }
 
