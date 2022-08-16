@@ -211,16 +211,16 @@ function clearGoals() {
 }
 
 document.getElementById('submit').addEventListener("click", async (event) => {
-    familyTreatmentPlan = document.getElementById('agreeFamilyTreatmentPlan').checked ? "agree" : "disagree"
-    autismSupportTreatmentPlan = document.getElementById('agreeISST').checked ? "agree" : "disagree";
-    newForm.caregiverName = document.getElementById('caregiverName').value;
-    newForm.staffMemberName = document.getElementById('staffName').value;
-    newForm.familyTreatmentPlan = familyTreatmentPlan;
-    newForm.autismSupportTreatmentPlan = autismSupportTreatmentPlan;
-    if (document.getElementById('acceptReceiveCopy').checked) { newForm.copyOfPlan = 'accept' }
-    if (document.getElementById('hardCopyReceiveCopy').checked) { newForm.copyOfPlan = 'hard copy' }
-    if (document.getElementById('electronicReceiveCopy').checked) { newForm.copyOfPlan = 'electronic' }
-    if (document.getElementById('disagreeReceiveCopy').checked) { newForm.copyOfPlan = 'disagree' }
+   // familyTreatmentPlan = document.getElementById('agreeFamilyTreatmentPlan').checked ? "agree" : "disagree"
+   // autismSupportTreatmentPlan = document.getElementById('agreeISST').checked ? "agree" : "disagree";
+   // newForm.caregiverName = document.getElementById('caregiverName').value;
+   // newForm.staffMemberName = document.getElementById('staffName').value;
+   // newForm.familyTreatmentPlan = familyTreatmentPlan;
+   // newForm.autismSupportTreatmentPlan = autismSupportTreatmentPlan;
+    //if (document.getElementById('acceptReceiveCopy').checked) { newForm.copyOfPlan = 'accept' }
+    //if (document.getElementById('hardCopyReceiveCopy').checked) { newForm.copyOfPlan = 'hard copy' }
+    //if (document.getElementById('electronicReceiveCopy').checked) { newForm.copyOfPlan = 'electronic' }
+    //if (document.getElementById('disagreeReceiveCopy').checked) { newForm.copyOfPlan = 'disagree' }
     console.log(newForm)
     submitForm(newForm, formName)
 })
