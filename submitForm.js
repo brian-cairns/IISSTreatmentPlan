@@ -252,11 +252,13 @@ async function submitForm(data, form) {
 }
 
 function respond(data) {
-  let id = data.id
+  let id = data.key
   if (id) {
     showSuccess(id)
     let name = newForm.clientName	  
-    sendNotification(id, name)	  
+    sendNotification(id, name, 'individual', 'not urgent')
+    sendNotification(id, newForm.familyTrainerName, 'individual', 'not urgent')
+    sendNotification(id, 'admin', 'individual', 'not urgent')
   } else {
     showError(data.error)
   }
@@ -276,13 +278,15 @@ function showError(err) {
     document.getElementById('returnMessage').innerHTML = `An error occurred when submitting this form, which was ${err}. Please contact the administrator for help.`
 }
 
-async function sendNotification(id, client) {
-  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/IISS-treatment-plan?formId=${id}>Educational Consultation Summary</a>`
+async function sendNotification(id, recipient, type, priority) {
+  let message = `You have a new <br/><a href=phoenix-freedom-foundation-backend.webflow.io/completed-forms/iiss-treatment-plan?id=${id}>Educational Consultation Summary</a>`
   console.log(message)
   const url = 'https://pffm.azurewebsites.net/notices'
   let notification = {
-    'name': client,
-    'notice' : message 
+    'name': recipient,
+    'notice': message,
+    'type': type,
+    'priority': priority
   }
   const header = {
       'Content-Type': 'application/json',
