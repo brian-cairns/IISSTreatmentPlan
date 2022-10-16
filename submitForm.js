@@ -4,40 +4,107 @@ const formName = 'IISSTreatmentPlan'
 console.log('form: ' + formName)
 let newForm = {}
 newForm.goals = []
-let submitted = 0
-let additional = 0
+let buttons = []
+let goalBlocks = []
+let createNewButtons = []
+let achieved = []
+let discontinued = []
+let ongoing = []
+let goalCriteria = []
+let criteriaEntries = []
+
+//Create class
+class Goal {
+    constructor(goalName, strengths, needs, objectives, interventions, data, responsible, progress, completionCriteria, criteriaProgress) {
+      this.goalName = goalName;
+      this.strengths = strengths;
+      this.needs = needs;
+      this.objectives = objectives;
+      this.interventions = interventions;
+      this.data = data
+      this.responsible = responsible;
+      this.progress = progress
+      this.completionCriteria = completionCriteria
+      this.criteriaProgress = criteriaProgress
+    }
+}
+
+//Set up bulk event listeners
+for (let i = 1; i < 4; i++) {
+  goalBlocks[i+1] = document.getElementById(`goalBlock${i + 1}`)
+  createNewButtons[i] = document.getElementById(`createNewGoal${i}`)
+  achieved[i] = document.getElementById(`achieved${i}`)
+  discontinued[i] = document.getElementById(`discontinued${i}`)
+  ongoing[i] = document.getElementById(`ongoing${i}`)
+  goalBlocks[i+1].style.display = 'none'
+  createNewButtons[i].addEventListener('click', () => {
+    goalBlocks[i+1].style.display = 'block'
+  })
+  createNewButtons[i].style.display = 'none'
+
+}
+
+for (let i = 1; i < 13; i++) {
+  criteriaEntries[i] = document.querySelector(`input#criteriaEntry${i}`)
+  criteriaEntries[i].value = ' '
+  goalCriteria[i] = document.getElementById(`goalCriteria${i}`)
+  criteriaEntries[i].addEventListener('change', (e) => {
+    document.getElementById(`criteria${i}`).innerText = e.target.value
+  })
+}
+
+for (let i = 1; i < 5; i++) {
+  buttons[i] = document.getElementById(`submitGoal${i}`)
+  buttons[i].addEventListener('click', () => {
+    let goal = new Goal()
+    goal.goalName = document.getElementById(`IISSGoal${i}`)
+    goal.strengths = document.getElementById(`strengths${i}`)
+    goal.needs = document.getElementById(`needs${i}`)
+    goal.objectives = document.getElementById(`objectives${i}`)
+    goal.interventions = document.getElementById(`interventions${i}`)
+    goal.data = document.getElementById(`data${i}`)
+    achieved[i].checked ? goal.status = 'achieved' : discontinued[i] ? goal.status = 'discontinued' : goal.status = 'ongoing'
+    goal.criteriaProgress = getCriteriaProgress((i - 1) * 3)
+    newForm.goals.push(goal)
+    if (i < 4) { createNewButtons[i].style.display = 'inline' }
+  })
+}
+
+function getCriteriaProgress(j) {
+  let progress = []
+  for (let i = j; i < j + 3; i++) {
+    let criteria = ''
+    goalCriteria[i+1].checked ? criteria = document.getElementById(`criteria${i+1}`).innerText : ' '
+    progress.push(criteria)
+  }
+  return progress
+}
 
 let clientName = document.querySelector('input#clientName')
 clientName.addEventListener('change', (e) => {
-	console.log('changed')
 	newForm.clientName = e.target.value;
   console.log(newForm.clientName);
   document.getElementById('showClientName').innerHTML = newForm.clientName;
-  document.getElementById('showClientName1').innerHTML = newForm.clientName
   })
   
 let address = document.querySelector('input#address')
 address.addEventListener('change', (e) => {
 	newForm.address = e.target.value;
-  console.log(newForm.address);
 })
 
 let city = document.querySelector('input#city')
 city.addEventListener('change', (e) => {
 	newForm.city = e.target.value;
-  console.log(newForm.city);
 })
 
 let state = document.querySelector('input#state')
 state.addEventListener('change', (e) => {
 	newForm.state = e.target.value;
-  console.log(newForm.state);
 })
 
 let zip = document.querySelector('input#zip')
 zip.addEventListener('change', (e) => {
 	newForm.zip = e.target.value;
-  console.log(newForm.zip);
 })
 
 let start = document.querySelector('input#start')
@@ -61,28 +128,29 @@ sixMonthReview.addEventListener('change', (e) => {
 let phone = document.querySelector('input#phone')
 phone.addEventListener('change', (e) => {
 	newForm.phone = e.target.value;
-  console.log(newForm.phone);
 })
 
 let email = document.querySelector('input#email')
 email.addEventListener('change', (e) => {
 	newForm.email = e.target.value;
-  console.log(newForm.email);
 })
 
 let dob = document.querySelector('input#dob')
 dob.addEventListener('change', (e) => {
 	newForm.dob = e.target.value;
-  console.log(newForm.dob);
-  document.getElementById('showClientDOB').innerHTML = newForm.dob;
-  document.getElementById('showClientDOB1').innerHTML = newForm.dob;
+  document.getElementById('clientDobFlag').innerHTML = newForm.dob;
 })
 
 let familyTrainerName = document.querySelector('input#familyTrainerName')
 familyTrainerName.addEventListener('change', (e) => {
 	newForm.familyTrainerName = e.target.value;
-  console.log(newForm.familyTrainerName);
 })
+
+let intakeDate = document.querySelector('input#intakeDate')
+intakeDate.addEventListener('change', (e) => { 
+  newForm.intakeDate = e.target.value;
+})
+
 
 let annual = document.querySelector('input#annual')
 annual.addEventListener('change', (e) => { 
@@ -94,7 +162,6 @@ annual.addEventListener('change', (e) => {
         newForm.threeMonths = ''
         document.getElementById('threeMonth').checked = false
     }
-    console.log(newForm.annual)
     })
 
 let threeMonth = document.querySelector('input#threeMonth')
@@ -103,127 +170,38 @@ threeMonth.addEventListener('change', (e) => {
         newForm.threeMonth = ''
         document.getElementById('threeMonth').checked = false
     } else {
-        newForm.threeMonth = 'threeMonth'
+        newForm.threeMonth = 'sixMonth'
         newForm.annual = ''
         document.getElementById('annual').checked = false
     }
-    console.log(newForm.threeMonth)
 })
     
-let background = document.querySelector('input#background')
+let background = document.getElementById('background')
 background.addEventListener('change', (e) => {
-    newForm.background = e.target.value;
-    console.log(newForm.background)
-    })
+  newForm.background = e.target.value;
+})
 
-class Goal {
-    constructor(goalName, strengths, needs, objectives, interventions, responsiblePersonTimeline, progress, notes) {
-        this.goalName = goalName;
-        this.strengths = strengths;
-        this.needs = needs;
-        this.objectives = objectives;
-        this.interventions = interventions;
-        this.responsiblePersonTimeline = responsiblePersonTimeline;
-        this.progress = progress
-        this.notes = notes
-    }
+let accept = document.getElementById('acceptReceiveCopy')
+let hardCopy = document.getElementById('hardCopyReceiveCopy')
+let electronic = document.getElementById('electronicReceiveCopy')
+let disagree = document.getElementById('disagreeReceiveCopy')
+
+
+document.getElementById('submit').addEventListener("click", (event) => {
+  document.getElementById('agreeFamilyTreatmentPlan').checked ? newForm.familyTreatmentPlan = 'agree':  newForm.familyTreatmentPlan = 'disagree'
+  document.getElementById('disagreeFamilyTreatmentPlan').checked ? newForm.familyTreatmentPlan = 'disagree':  newForm.familyTreatmentPlan = 'agree'
+  document.getElementById('agreeISST').checked ? newForm.IISSTreatmentPlan = 'agree':  newForm.IISSPlan = 'disagree'
+  document.getElementById('disagreeISST').checked ? newForm.IISSTreatmentPlan = 'disagree' : newForm.IISSPlan = 'agree'
+  newForm.copyAccepted = getCopyOption()
+  submitForm(newForm, formName)
+})
+
+function getCopyOption() {
+  let option = ''
+  accept.checked ? option = 'accepted' : hardCopy.checked ? option = 'hard copy' : electronic.checked ? option = 'electronic' : option = 'disagree'
+  return option
 }
 
-async function getCurrentGoal(goal) {
-    goal.goalName = document.getElementById('mainGoal').value
-    goal.strengths = document.getElementById('strengths').value;
-    goal.needs = document.getElementById('needs').value;
-    goal.objectives = await getObjectives
-    goal.interventions = document.getElementById('interventions').value;
-    goal.responsiblePersonTimeline = await getResponsiblePersonTimeline;
-    goal.progress = await getProgress
-    goal.notes = document.getElementById('notes').value;
-    return goal
-}
-
-getObjectives = new Promise ((resolve) => {
-    let objectives = []
-    for (let i = 1; i < 4; i++) {
-        if (document.getElementById(`goal${i}`) == '') {
-            i = 4;
-            return objectives
-        } else {objectives.push(document.getElementById(`goal${i}`).value)}
-    }
-    resolve(objectives)
-})
-
-getResponsiblePersonTimeline = new Promise ((resolve) => {
-    let responsiblePersonTimeline = []
-    for (let i = 1; i < 4; i++) {
-        if (document.getElementById(`responsiblePersonTimelineItem${i}`) == '') {
-            i = 4;
-            return responsiblePersonTimeline
-        } else {responsiblePersonTimeline.push(document.getElementById(`responsiblePersonTimelineItem${i}`).value)}
-    }
-    resolve(responsiblePersonTimeline)
-})
-
-getProgress = new Promise ((resolve) => {
-    let progress = ''
-    if (document.getElementById('achieved').checked) { progress = 'achieved' }
-    if (document.getElementById('discontinued').checked) { progress = 'discontinued' } else { progress = 'on-going' }
-    resolve(progress)
-})
-
-document.getElementById('submitCurrentGoal').addEventListener("click", async (event) => {
-    goal = new Goal;
-    console.log(goal)
-    goal = await getCurrentGoal(goal)
-    console.log(`I am the the completed goal: ${goal}`)
-    newForm.goals.push(goal)
-    submitted++
-    document.getElementById('submissionResponse').innerHTML = "Successfully Submitted"
-})
-
-document.getElementById('createNewGoal').addEventListener("click", async (event) => {
-    if (submitted <= additional) {
-        document.getElementById('submissionResponse').innerHTML = "You need to submit a goal before continuing"
-        return
-    }
-    document.getElementById('submissionResponse').innerHTML = " "
-    additional++
-    clearGoals()
-    return
-})
-
-function showError() {
-    return document.getElementById('submitError').style.display='block'
-}
-
-function clearGoals() {
-    document.getElementById('mainGoal').value = '';
-    document.getElementById('strengths').value = '';
-    document.getElementById('needs').value = '';
-    for (let i = 1; i < 4; i++) {
-        document.getElementById(`goal${i}`).value = ''
-        document.getElementById(`responsiblePersonTimelineItem${i}`).value = ''
-    }
-    document.getElementById('interventions').value = ''
-    document.getElementById('achieved').checked = false;
-    document.getElementById('ongoing').checked = false;
-    document.getElementById('discontinued').checked = false;
-    document.getElementById('notes').value = ''
-}
-
-document.getElementById('submit').addEventListener("click", async (event) => {
-   // familyTreatmentPlan = document.getElementById('agreeFamilyTreatmentPlan').checked ? "agree" : "disagree"
-   // autismSupportTreatmentPlan = document.getElementById('agreeISST').checked ? "agree" : "disagree";
-   // newForm.caregiverName = document.getElementById('caregiverName').value;
-   // newForm.staffMemberName = document.getElementById('staffName').value;
-   // newForm.familyTreatmentPlan = familyTreatmentPlan;
-   // newForm.autismSupportTreatmentPlan = autismSupportTreatmentPlan;
-    //if (document.getElementById('acceptReceiveCopy').checked) { newForm.copyOfPlan = 'accept' }
-    //if (document.getElementById('hardCopyReceiveCopy').checked) { newForm.copyOfPlan = 'hard copy' }
-    //if (document.getElementById('electronicReceiveCopy').checked) { newForm.copyOfPlan = 'electronic' }
-    //if (document.getElementById('disagreeReceiveCopy').checked) { newForm.copyOfPlan = 'disagree' }
-    console.log(newForm)
-    submitForm(newForm, formName)
-})
 
 let printForm = document.getElementById('printToPDF')
 printForm.style.display = 'none'
